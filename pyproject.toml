@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fpmig"
+version = "1.0.0"
+description = "Migrate minutiae-template fingerprint systems to deep image-embedding verification (models and reference client)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT (code); see MODEL_LICENSE.md for the model weights" }
+authors = [{ name = "Mohamed Ezz" }]
+keywords = ["fingerprint", "biometrics", "verification", "minutiae", "embedding", "migration", "siamese"]
+dependencies = ["numpy>=1.23", "opencv-python-headless>=4.7", "tensorflow>=2.15"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+fpmig = "fpmig.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ezzmohamed2017/fingerprint-minutiae-migration"
+
+[tool.setuptools.packages.find]
+include = ["fpmig*"]

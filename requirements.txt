@@ -1,0 +1,3 @@
+numpy>=1.23
+opencv-python-headless>=4.7
+tensorflow>=2.15

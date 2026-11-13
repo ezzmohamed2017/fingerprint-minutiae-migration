@@ -21,17 +21,17 @@ Requires Python ≥ 3.9, TensorFlow ≥ 2.15 and OpenCV. A GPU or NPU is recomme
 
 ## Models
 
-The weights are published as `fpmig-models-v1.0.0.zip` in the
-[releases](https://github.com/ezzmohamed2017/fingerprint-minutiae-migration/releases) and are downloaded automatically
-on first use (cached in `~/.cache/fpmig`). To use a local copy, set `FPMIG_MODELS=/path/to/folder-or-zip` or pass
-`model_path=` to the client.
+The weights are in the [`models/`](models) folder of this repository. After `pip install` they are downloaded
+automatically on first use (about 128 MB, checked against the SHA-256 sums in `models/config.json` and cached in
+`~/.cache/fpmig`). When you work from a clone, the client uses `models/` directly. To use another copy, set
+`FPMIG_MODELS=/path/to/folder` or pass `model_path=` to the client.
 
 | File | Model |
 |---|---|
 | `image_encoder.weights.h5` | image encoder: letterboxed greyscale image → 1024-d embedding |
 | `minutiae_encoder.weights.h5` | minutiae encoder: ISO 19794-2 template → 1024-d embedding |
 | `siamese_minutiae_tower.weights.h5`, `siamese_image_tower.weights.h5` | shared tower used for migration and the first login |
-| `config.json` | model settings, default thresholds, SHA-256 checksums |
+| `config.json` | model settings, operating thresholds, SHA-256 checksums |
 
 ## Usage (Python)
 
@@ -58,8 +58,10 @@ print(v.match, v.score)
 e = client.embed_image("new_user.png")
 ```
 
-`threshold=` accepts a number, `"eer"`, `"fmr_1e-2"` or `"fmr_1e-3"`. Defaults: `"eer"` for daily login and
-`"fmr_1e-3"` for the first login, where a false match would enrol the wrong person's image.
+`threshold=` accepts a number or one of the operating points in `models/config.json`: `"eer"` (default),
+`"fmr_1e-2"` or `"fmr_1e-3"`. Stricter points lower the false match rate at the cost of rejecting more genuine
+users; at the first login, where a false match would enrol the wrong person's image, choose the point that fits
+your fallback procedure (for example supervised re-enrolment after a rejection).
 
 ## Usage (command line)
 

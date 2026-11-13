@@ -126,7 +126,7 @@ def cmd_calibrate(args):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="fpmig", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--models", help="model folder or zip (default: $FPMIG_MODELS or the GitHub release)")
+    ap.add_argument("--models", help="model folder or zip (default: $FPMIG_MODELS, the models/ folder or a download from GitHub)")
     sp = ap.add_subparsers(dest="cmd", required=True)
 
     p = sp.add_parser("info"); p.set_defaults(fn=cmd_info)

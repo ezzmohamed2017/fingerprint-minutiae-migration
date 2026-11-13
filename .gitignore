@@ -3,7 +3,5 @@ __pycache__/
 build/
 dist/
 .pytest_cache/
-models/
-*.weights.h5
 *.npz
 *.zip

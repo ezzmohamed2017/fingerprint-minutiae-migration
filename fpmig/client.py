@@ -67,7 +67,7 @@ class MigrationClient:
 
     Parameters
     ----------
-    model_path: folder or .zip with the released files; default = ``$FPMIG_MODELS`` or the GitHub release.
+    model_path: folder or .zip with the released files; default = ``$FPMIG_MODELS``, the repository models/ folder, or a download from GitHub.
     xla: compile the image model with XLA (about 2x faster on a GPU; much slower on a CPU — leave False there).
     """
 

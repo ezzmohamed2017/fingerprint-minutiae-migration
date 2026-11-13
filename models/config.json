@@ -1,0 +1,44 @@
+{
+  "name": "fpmig",
+  "version": "1.0.0",
+  "embedding_dim": 1024,
+  "score": "cosine similarity of L2-normalised embeddings",
+  "image_model": {
+    "backbone": "EfficientNetV2S",
+    "image_size": 224
+  },
+  "minutiae_model": {
+    "config": {
+      "quality": false,
+      "k": 24,
+      "depth": 3,
+      "N": 128,
+      "aggregate": "max",
+      "crop": true
+    }
+  },
+  "thresholds": {
+    "daily_image_vs_image": {
+      "eer": 0.338446,
+      "fmr_1e-2": 0.534847,
+      "fmr_1e-3": 0.679378
+    },
+    "first_login_cross_space": {
+      "eer": 0.519079,
+      "fmr_1e-2": 0.84808,
+      "fmr_1e-3": 0.942119
+    }
+  },
+  "default_operating_point": {
+    "daily": "eer",
+    "first_login": "eer"
+  },
+  "threshold_note": "Set on development data; they do not transfer reliably to other sensors. Calibrate on the target sensor (fpmig.calibrate).",
+  "licence": "weights: CC BY-NC 4.0 (MODEL_LICENSE.md); code: MIT",
+  "sha256": {
+    "image_encoder.weights.h5": "6578d6ca0e6ccbf7150acf78e2cd297aab0122e796558d3fb5521787b54760a7",
+    "minutiae_encoder.weights.h5": "e9ead15c8fbbac883bce6a8ac4758c83a952a573d15ec35640a8c40193892219",
+    "siamese_image_tower.weights.h5": "529e5e65ed4947d6ecd9e10aa20c2bd7f52b785abead5266668882877b52dc19",
+    "siamese_minutiae_tower.weights.h5": "2a0b4cea5eb65fb1dc9c99a444c49afb517d34fc3cd62b01d8b6321a81912805"
+  }
+}

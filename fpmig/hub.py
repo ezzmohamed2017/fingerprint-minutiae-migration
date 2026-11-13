@@ -1,10 +1,11 @@
-"""Locate or download the released model files.
+"""Locate or download the pretrained model files.
 
 Order of lookup for :func:`model_dir`:
 
-1. the ``path`` argument;
+1. the ``path`` argument (a folder or a .zip);
 2. the ``FPMIG_MODELS`` environment variable;
-3. the cache ``~/.cache/fpmig/<version>`` (downloaded from the GitHub release on first use).
+3. the ``models/`` folder of a cloned repository (when the package is used from a clone);
+4. the cache ``~/.cache/fpmig/<version>``, filled from the GitHub repository on first use.
 """
 from __future__ import annotations
 
@@ -12,19 +13,15 @@ import hashlib
 import json
 import os
 import shutil
-import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
 from typing import Optional
 
-from . import __version__
-
 GITHUB_OWNER = "ezzmohamed2017"
 GITHUB_REPO = "fingerprint-minutiae-migration"
 MODELS_VERSION = "1.0.0"
-ASSET = f"fpmig-models-v{MODELS_VERSION}.zip"
-RELEASE_URL = f"https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}/releases/download/v{MODELS_VERSION}/{ASSET}"
+BASE_URL = f"https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}/raw/main/models"
 
 REQUIRED = (
     "config.json",
@@ -52,39 +49,37 @@ def sha256(path: Path) -> str:
 
 
 def verify(d: Path) -> None:
-    """Check every file listed in config.json["sha256"] against its digest."""
-    cfg = json.loads((d / "config.json").read_text())
+    """Check every weight file against the SHA-256 listed in config.json."""
+    cfg = json.loads((Path(d) / "config.json").read_text())
     for name, digest in cfg.get("sha256", {}).items():
-        p = d / name
-        if p.is_file() and sha256(p) != digest:
-            raise IOError(f"{p} is corrupted (sha256 mismatch); delete {d} and download again")
+        p = Path(d) / name
+        if not p.is_file():
+            raise FileNotFoundError(p)
+        if sha256(p) != digest:
+            raise IOError(f"{p} is corrupted or incomplete (sha256 mismatch); delete it and try again")
 
 
-def download(url: str = RELEASE_URL, dest: Optional[Path] = None, quiet: bool = False) -> Path:
+def download(dest: Optional[Path] = None, base_url: str = BASE_URL, quiet: bool = False) -> Path:
+    """Download the model files from the GitHub repository into ``dest`` (default: the cache)."""
     dest = Path(dest or _cache_root() / MODELS_VERSION)
     dest.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory() as tmp:
-        zpath = Path(tmp) / ASSET
+    for name in REQUIRED:
+        target = dest / name
+        if target.is_file() and name != "config.json":
+            continue
         if not quiet:
-            print(f"fpmig: downloading models from {url}")
-        with urllib.request.urlopen(url) as r, open(zpath, "wb") as fh:
+            print(f"fpmig: downloading {name}")
+        tmp = target.with_suffix(target.suffix + ".part")
+        with urllib.request.urlopen(f"{base_url}/{name}") as r, open(tmp, "wb") as fh:
             shutil.copyfileobj(r, fh)
-        with zipfile.ZipFile(zpath) as z:
-            for member in z.namelist():
-                target = (dest / member).resolve()
-                if not str(target).startswith(str(dest.resolve())):
-                    raise IOError(f"unsafe path in archive: {member}")
-            z.extractall(dest)
-    # the archive may hold a single top-level folder
-    if not _complete(dest):
-        subs = [p for p in dest.iterdir() if p.is_dir() and _complete(p)]
-        if subs:
-            for p in subs[0].iterdir():
-                shutil.move(str(p), dest / p.name)
-    if not _complete(dest):
-        raise IOError(f"the downloaded archive does not contain {REQUIRED}")
+        tmp.replace(target)
     verify(dest)
     return dest
+
+
+def _repo_models() -> Optional[Path]:
+    d = Path(__file__).resolve().parent.parent / "models"
+    return d if _complete(d) else None
 
 
 def model_dir(path: Optional[str | os.PathLike] = None, download_if_missing: bool = True) -> Path:
@@ -97,13 +92,14 @@ def model_dir(path: Optional[str | os.PathLike] = None, download_if_missing: boo
                     out.mkdir(parents=True, exist_ok=True)
                     with zipfile.ZipFile(d) as z:
                         z.extractall(out)
-                    subs = [p for p in out.iterdir() if p.is_dir() and _complete(p)]
-                    if not _complete(out) and subs:
-                        return subs[0]
-                return out
+                subs = [p for p in out.iterdir() if p.is_dir() and _complete(p)]
+                return out if _complete(out) or not subs else subs[0]
             if not _complete(d):
                 raise FileNotFoundError(f"{d} does not contain the model files {REQUIRED}")
             return d
+    local = _repo_models()
+    if local is not None:
+        return local
     d = _cache_root() / MODELS_VERSION
     if _complete(d):
         return d
@@ -116,4 +112,4 @@ def load_config(d: Path) -> dict:
     return json.loads((Path(d) / "config.json").read_text())
 
 
-__all__ = ["model_dir", "download", "load_config", "verify", "RELEASE_URL", "__version__"]
+__all__ = ["model_dir", "download", "load_config", "verify", "BASE_URL"]

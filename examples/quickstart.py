@@ -10,7 +10,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--template", required=True, help="ISO/IEC 19794-2 record stored by the legacy system")
 ap.add_argument("--probe", required=True, help="image captured at the user's first login")
 ap.add_argument("--today", required=True, help="image captured at a later login")
-ap.add_argument("--models", help="model folder or zip (default: download the release)")
+ap.add_argument("--models", help="model folder or zip (default: the models/ folder or a download from GitHub)")
 a = ap.parse_args()
 
 client = MigrationClient(a.models)

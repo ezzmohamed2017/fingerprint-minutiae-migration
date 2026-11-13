@@ -6,7 +6,7 @@ from tests.conftest import make_iso
 
 
 def training_to_set(m, n_max=128, quality=False):
-    # verbatim copy of fpp13_minutiae.to_set (training code)
+    # reference implementation used in training
     F_ = 8 if quality else 7; n = len(m['x']); keep = np.argsort(-m['quality'], kind='stable')[:n_max] if n > n_max else np.arange(n); k = len(keep)
     s = np.zeros((n_max, F_ + 1), np.float32)
     s[:k, 0] = m['x'][keep] / COORD_HALF; s[:k, 1] = m['y'][keep] / COORD_HALF; s[:k, 2] = np.cos(m['theta'][keep]); s[:k, 3] = np.sin(m['theta'][keep])
@@ -16,7 +16,7 @@ def training_to_set(m, n_max=128, quality=False):
 
 
 def training_parse_iso(data):
-    # verbatim logic of FPF00 parse_iso (training data preparation)
+    # reference implementation used in training
     import struct
     pos = 24; fq = data[pos + 2]; n = data[pos + 3]; pos += 4
     x = np.zeros(n, np.float32); y = np.zeros(n, np.float32); t = np.zeros(n, np.float32); k = np.zeros(n, np.uint8); q = np.zeros(n, np.float32)

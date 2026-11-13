@@ -2,7 +2,7 @@
 
     python examples/migrate_population.py --templates /data/templates --out migrated.npz
 
-Runs on a GPU if TensorFlow sees one (about 38 minutes per million templates on one T4).
+Runs on a GPU if TensorFlow sees one.
 """
 import argparse
 import time

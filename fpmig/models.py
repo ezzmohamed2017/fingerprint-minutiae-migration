@@ -1,8 +1,8 @@
 """Model definitions, rebuilt exactly as trained so that the released ``.weights.h5`` files load by structure.
 
-* image encoder  — EfficientNetV2-S backbone + 1024-d embedding head (FPP04L / FPP05 winner);
-* minutiae encoder — local-structure encoder over the k nearest neighbours of each minutia (FPP13 joint winner);
-* Siamese tower — one MLP shared by both modalities with a learned modality offset per side (FPP12 / FPP13).
+* image encoder  — CNN backbone + 1024-d embedding head;
+* minutiae encoder — permutation-invariant encoder over the minutiae set;
+* Siamese tower — maps both modalities into one shared space for the first-login comparison.
 
 Layer names and creation order must not change: they define how weights are matched when loading.
 """

@@ -1,4 +1,4 @@
-"""High-level client for the three operational scenarios of the paper.
+"""High-level client for the three operational scenarios.
 
 1. **Batch migration** (offline, once per stored template): minutiae template -> minutiae encoder ->
    Siamese tower -> 1024-d *migration template*.  :meth:`MigrationClient.migrate_templates`

@@ -1,8 +1,8 @@
 """Decision thresholds from genuine and impostor scores.
 
-A threshold learned on one sensor does not transfer to another one: in the paper, the image-model threshold
-frozen on MOLF validation gave an EER of 2.87 % on FingerDOS but a false match rate of 11.9 % at that
-threshold. Before deployment, collect genuine and impostor pairs on the target sensor and population and set
+A threshold learned on one sensor does not transfer reliably to another one: the score distribution shifts
+with the sensor, so the false match rate at a fixed threshold can be far from the one measured during
+development even when the ranking quality (EER, AUC) stays good. Before deployment, collect genuine and impostor pairs on the target sensor and population and set
 the threshold here (target FMR is the usual operating point; EER is reported for comparison).
 """
 from __future__ import annotations

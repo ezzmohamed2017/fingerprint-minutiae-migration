@@ -56,7 +56,7 @@ class Minutiae:
     def __len__(self) -> int:
         return len(self.x)
 
-    # ---- the representation used in training (fpp13_minutiae.load_minutiae)
+    # ---- the representation used in training
     def normalised(self) -> dict:
         f = 500.0 / float(self.ppi)
         return {
